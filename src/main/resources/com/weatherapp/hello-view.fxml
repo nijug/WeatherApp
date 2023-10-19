@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="544.0" prefWidth="589.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.weatherapp.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="544.0" prefWidth="589.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.weatherapp.controllers.Controller">
    <children>
       <Button fx:id="getCurrentTemperatureButton" layoutX="86.0" layoutY="200.0" mnemonicParsing="false" onAction="#onGetCurrentTemperatureClick" prefHeight="25.0" prefWidth="145.0" text="Get current temperature" />
       <TextField fx:id="cityField" layoutX="36.0" layoutY="59.0" onAction="#onCityFieldEnter" prefHeight="25.0" prefWidth="244.0" promptText="Enter city and press Enter" />

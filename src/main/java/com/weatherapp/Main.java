@@ -1,11 +1,9 @@
 package com.weatherapp;
 
-import com.weatherapp.models.City;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.util.concurrent.CompletableFuture;
 
 import java.io.IOException;
 
@@ -23,12 +21,7 @@ public class Main extends Application {
     public static void main(String[] args) {
 
         launch();
-        /*
-        WeatherAppService service= new WeatherAppService();
-        City cities[] = service.GetLocations("Warszawa");
-        for (City city : cities)
-            System.out.println(city.getLocalizedName()+" "+city.getAdministrativeArea().getLocalizedName());
-    */
+
     }
 
 }

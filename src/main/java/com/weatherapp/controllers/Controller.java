@@ -1,5 +1,6 @@
-package com.weatherapp;
+package com.weatherapp.controllers;
 
+import com.weatherapp.services.WeatherAppService;
 import com.weatherapp.models.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,64 +38,63 @@ public class Controller {
     private boolean isRegionSelected = false;
     private final WeatherAppService service;
 
-    private City[] cities;
+    private CityController cities;
 
-    private Region[] regions;
+    private RegionController regions;
 
-    private Country[] countries;
+    private CountryController countries;
 
-    private String citySelectedKey;
-
-    private String citySelected;
     public Controller(){
         service = new WeatherAppService();
 
     }
     @FXML
     public void initialize() {
-        regions = service.getRegions();
-        for (Region region : regions)
-            regionsList.getItems().add(region.getLocalizedName());
+        regions = new RegionController(service.getRegions());
+        for (int i = 0; i < regions.getNumberOfRegions(); i++) {
+            regionsList.getItems().add(regions.getLocalizedName(i));
+        }
     }
 
     @FXML
     private void onGetCurrentTemperatureClick(ActionEvent e) {
-        currentCityLabel.setText(citySelected);
-        currentTempLabel.setText(Double.toString(service.getCurrentCondtion(citySelectedKey).Temperature.getMetric().getValue()));
+        currentCityLabel.setText(cities.getLocalizedName(cities.getCitySelectedIndex()));
+        currentTempLabel.setText(Double.toString(service.getCurrentCondtion(cities.getKey(cities.getCitySelectedIndex())).Temperature.getMetric().getValue()));
 
     }
 
     @FXML
     private void onGetDailyForecastClick(ActionEvent e) {
 
-        DailyForecasts forecast = service.getOneDayForecast(citySelectedKey).getDailyForecasts();
-        maxCityLabel.setText(citySelected);
+        DailyForecasts forecast = service.getOneDayForecast(cities.getKey(cities.getCitySelectedIndex())).getDailyForecasts();
+        maxCityLabel.setText(cities.getLocalizedName(cities.getCitySelectedIndex()));
         maxTempLabel.setText(forecast.getTemperature().getMaximum().getValue()+" "+forecast.getTemperature().getMaximum().getUnit());
 
-        minCityLabel.setText(citySelected);
+        minCityLabel.setText(cities.getLocalizedName(cities.getCitySelectedIndex()));
         minTempLabel.setText(forecast.getTemperature().getMinimum().getValue()+" "+forecast.getTemperature().getMinimum().getUnit());
 
     }
     @FXML
     private void onCityFieldEnter(ActionEvent e) {
         String cityEntered = cityField.getText();
-        cities = service.getLocations(cityEntered);
+
+        cities = new CityController(service.getLocations(cityEntered));
         updateAutocompleteList();
 
     }
 
-    private void updateAutocompleteList(){
+    private void updateAutocompleteList() {
         autocompleteList.getItems().clear();
-        for (City city : cities)
-            autocompleteList.getItems().add(city.getLocalizedName()+" "+city.getAdministrativeArea().getLocalizedName());
+        for (int i = 0; i < cities.getNumberOfCities(); i++) {
+            autocompleteList.getItems().add(cities.getLocalizedName(i) + " " + cities.getAdministrativeAreasNames(i));
+        }
     }
-
     @FXML
     private void onAutocompleteListClick(MouseEvent e) {
-        citySelected = autocompleteList.getSelectionModel().getSelectedItem().toString();
-        for (City city : cities) {
-            if ((city.getLocalizedName() + " " + city.getAdministrativeArea().getLocalizedName()).equals(citySelected)) {
-               citySelectedKey = city.getKey();
+        String citySelected = autocompleteList.getSelectionModel().getSelectedItem().toString();
+        for (int i = 0; i < cities.getNumberOfCities(); i++) {
+            if ((cities.getLocalizedName(i) + " " + cities.getAdministrativeAreasNames(i)).equals(citySelected)) {
+                cities.setCitySelectedIndex(i);
             }
         }
     }
@@ -102,10 +102,11 @@ public class Controller {
     @FXML
     private void onRegionsListClick(MouseEvent e) {
         if (isRegionSelected) {
+            System.out.println("Country selected");
             String countrySelected = regionsList.getSelectionModel().getSelectedItem();
-            for (Country country : countries) {
-                if (country.getLocalizedName().equals(countrySelected)) {
-                    AdministrativeArea adminArea[] = service.getAdminArea(country.getID());
+            for (int i = 0; i < countries.getNumberOfCountries(); i++)
+                if  (countries.getLocalizedName(i).equals(countrySelected)) {
+                    AdministrativeArea adminArea[] = service.getAdminArea(countries.getID(i));
                     StringBuffer sb = new StringBuffer();
                     for (AdministrativeArea area : adminArea) {
                         sb.append(area.getLocalizedName()+", ");
@@ -113,16 +114,16 @@ public class Controller {
                     sb.delete(sb.length()-2, sb.length());
                     adminAreaLabel.setText(sb.toString());
                 }
-            }
         } else {
+            System.out.println("Region selected");
             isRegionSelected = true;
             String regionSelected = regionsList.getSelectionModel().getSelectedItem();
-            for (Region region : regions) {
-                if (region.getLocalizedName().equals(regionSelected)) {
+            for ( int i = 0; i < regions.getNumberOfRegions(); i++) {
+                if (regions.getLocalizedName(i).equals(regionSelected)) {
                     regionsList.getItems().clear();
-                    countries = service.getCountries(region.getID());
-                    for (Country country : countries) {
-                        regionsList.getItems().add(country.getLocalizedName());
+                    countries = new CountryController(service.getCountries(regions.getID(i)));
+                    for(int j = 0; j < countries.getNumberOfCountries(); j++){
+                        regionsList.getItems().add(countries.getLocalizedName(j));
                     }
                 }
             }

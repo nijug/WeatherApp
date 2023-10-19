@@ -1,4 +1,4 @@
-package com.weatherapp;
+package com.weatherapp.services;
 
 import com.weatherapp.models.*;
 
